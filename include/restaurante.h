@@ -1,9 +1,9 @@
-#ifdef RESTAURANTE_H
+#ifndef RESTAURANTE_H
 #define RESTAURANTE_H
 
 #include <pthread.h> 
 #include <semaphore.h>
-#inlcude "config.h"
+#include "config.h"
 
 // estrutura de dados
 typedef struct{
@@ -35,12 +35,12 @@ extern int pedidos_servidos;
 
 // declaracao de semaforos e mutexs (extern)
 extern pthread_mutex_t mutex_quadro;
-extern phtread_mutex_t mutex_balcao;
-extern pthread_mutex_t mute_servidos;
+extern pthread_mutex_t mutex_balcao;
+extern pthread_mutex_t mutex_servidos;
 extern sem_t sem_pratos_limpos;
 extern sem_t sem_slots_quadro_vazios;
 extern sem_t sem_slots_quadro_cheios;
-extern sem_t sem_itens_no_balcao;
+extern sem_t sem_prato_pronto;
 
 // prototipo das funcoes das threads
 void* rotina_garcom(void* arg);

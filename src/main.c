@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include "restaurante.h"
+#include "config.h"
 
 //definicao das variaveis globais 
 // aqui as variaveis declaradas como 'extern' em restaurante.h sao finalmente definidas
 QuadroDePedidos quadro_de_pedidos;
-PratoDePreparo balcao_itens_prontos[TOTAL_PEDIDOS];
+PratoEmPreparo balcao_itens_prontos[TOTAL_PEDIDOS];
 int pedidos_gerados = 0;
 int pedidos_servidos = 0;
 
@@ -15,9 +18,9 @@ pthread_mutex_t mutex_quadro;
 pthread_mutex_t mutex_balcao;
 pthread_mutex_t mutex_servidos;
 sem_t sem_pratos_limpos;
+sem_t sem_slots_quadro_vazios;
 sem_t sem_slots_quadro_cheios;
-sem_t sem_slots_quadro_cheios;
-sem_t sem_itens_no_balcao;
+sem_t sem_prato_pronto;
 
 //funcao principal
 int main(){
@@ -30,7 +33,7 @@ int main(){
     sem_init(&sem_pratos_limpos, 0, TOTAL_PRATOS);
     sem_init(&sem_slots_quadro_vazios, 0, TAMANHO_QUADRO);
     sem_init(&sem_slots_quadro_cheios, 0, 0);
-    sem_init(&sem_itens_no_balcao, 0, 0);
+    sem_init(&sem_prato_pronto, 0, 0);
 
     //inicializa estruturas de dados
     quadro_de_pedidos.in = 0;
@@ -43,9 +46,14 @@ int main(){
     printf("Restaurante aberto!\n");
 
     //vetores de threads
+    pthread_t garcons[NUM_GARCONS];
+    pthread_t cozinheiros_bife[NUM_COZINHEIROS_BIFE];
+    pthread_t cozinheiros_salada[NUM_COZINHEIROS_SALADA];
+    pthread_t chefes_montagem[NUM_CHEFS_MONTAGEM];
+
     for (int i = 0; i < NUM_GARCONS; i++){
         int* id = malloc(sizeof(int)); *id = i + 1;
-        pthread_creat(&garcons[i], NULL, rotina_garcom, id);
+        pthread_create(&garcons[i], NULL, rotina_garcom, id);
     }
     for (int i = 0; i < NUM_COZINHEIROS_BIFE; i++){
         char* tipo = malloc(sizeof(char) * 10); strcpy(tipo, "Bife");
@@ -66,13 +74,13 @@ int main(){
     for (int i = 0; i < NUM_CHEFS_MONTAGEM; i++) pthread_join(chefes_montagem[i], NULL);
 
     //limpeza de recursos 
-    ptrhead_mutex_destroy(&mutex_quadro);
-    ptrhead_mutex_destroy(&mutex_balcao);
-    ptrhead_mutex_destroy(&mutex_servidos);
+    pthread_mutex_destroy(&mutex_quadro);
+    pthread_mutex_destroy(&mutex_balcao);
+    pthread_mutex_destroy(&mutex_servidos);
     sem_destroy(&sem_pratos_limpos);
     sem_destroy(&sem_slots_quadro_vazios);
     sem_destroy(&sem_slots_quadro_cheios);
-    sem_destroy(&sem_itens_no_balcao);
+    sem_destroy(&sem_prato_pronto);
 
     printf("Restaurante Fechado! Todos os %d pedidos foram servidos.\n", TOTAL_PEDIDOS);
 
