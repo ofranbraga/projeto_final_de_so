@@ -1,0 +1,25 @@
+# Arquivos compilados
+*.o
+*.out
+*.obj
+*.elf
+*.so
+*.exe
+
+# Arquivos de backup
+*~
+*.bak
+
+# Arquivos gerados pelo OS
+.DS_Store
+Thumbs.db
+
+# Arquivos swap da IDE
+*.swp
+
+# Logs
+*.log
+
+# Arquivos de configuração do vscode
+.settings/
+.vscode/
