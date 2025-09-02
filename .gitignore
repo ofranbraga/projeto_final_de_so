@@ -23,3 +23,6 @@ Thumbs.db
 # Arquivos de configuração do vscode
 .settings/
 .vscode/
+
+# resultado final da compilação
+restaurante_caotico
